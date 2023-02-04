@@ -253,6 +253,7 @@ const Table: React.FC = () => {
 											<CustomCardDragPreview />
 
 											<CardDeck
+												game={socketStore.game as Game}
 												cards={socket.currentPlayer?.handCards}
 												player={socket.currentPlayer}
 											/>

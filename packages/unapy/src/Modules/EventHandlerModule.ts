@@ -63,10 +63,12 @@ class EventHandlerModule {
 
 			SocketService.on<JoinGameEventInput, JoinGameEventResponse>(client, "JoinGame", async ({ gameId }) => {
 				const game = await GameService.joinGame(gameId, playerData.id)
-				const chat = await ChatService.joinChat(game.chatId)
+				const chat = await ChatService.joinChat(game ? game.chatId : "")
 
-				SocketService.setupListener(client, "chat", game.chatId)
-				SocketService.setupListener(client, "game", gameId)
+				if (game) {
+					SocketService.setupListener(client, "chat", game.chatId)
+					SocketService.setupListener(client, "game", gameId)
+				}
 
 				return {
 					game,

@@ -17,7 +17,7 @@ import useSocket from "@/hooks/useSocket"
 
 import { Divider, Avatar } from "@/components"
 
-import { PlayerData, CardData, CardTypes, Game } from "@uno-game/protocols"
+import { PlayerData, CardData, CardTypes, Game, CardColors } from "@uno-game/protocols"
 
 import useStyles from "@/pages/Table/CardDeck/styles"
 import useCustomStyles from "@/styles/custom"
@@ -26,6 +26,8 @@ import Device from "@/utils/device"
 import { buildPercentage } from "@/utils/number"
 
 import PlayerEffect from "@/pages/Table/PlayerEffect"
+
+import ChooseColorModal from "@/pages/Table/ChooseColorModal"
 
 export const CARD_TYPE = "DraggableCard"
 const CARD_WIDTH = Device.isMobile ? 30 : 50
@@ -121,10 +123,11 @@ const DraggableCard: React.FC<CardProps> = (props) => {
 type CardDeckProps = {
 	cards: CardData[]
 	player: PlayerData
+	game: Game
 }
 
 const CardDeck: React.FC<CardDeckProps> = (props) => {
-	const { cards, player } = props
+	const { cards, player, game } = props
 
 	const { gameId } = useParams<{ gameId: string }>()
 
@@ -189,33 +192,62 @@ const CardDeck: React.FC<CardDeckProps> = (props) => {
 
 	const canBePartOfCurrentCombo = (cardType: CardTypes) => !!cardStore?.selectedCards?.some(card => card.type === cardType)
 
-	const toggleSelectedCard = (cardId: string) => {
-		console.log("### toggle", cardId)
-		const lastSelectedCards = cardStore.selectedCards
-		const selectedCard = cards.find(card => card.id === cardId)
-		const cardOnTopOfCardStack = (socketStore.game as Game).usedCards[0]
-		const selectedCardTypes = lastSelectedCards?.map(card => card.type)
+	const putCard = (cardIds: string[], selectedColor: CardColors) => {
+		socket.putCard(game.id, cardIds, selectedColor)
+	}
 
-		const isAlreadySelected = isCardSelected(cardId)
+	const handlePlay = async (card: CardData) => {
+		let selectedColor = "" as CardColors
 
-		if (isAlreadySelected) {
-			const cardsWithoutAlreadySelected = lastSelectedCards?.filter(card => card.id !== cardId)
+		const isColorEffectCard = (cardType: CardTypes) => cardType === "buy-4" || cardType === "change-color"
 
-			if (cardOnTopOfCardStack.color === selectedCard?.color) {
-				if (cardsWithoutAlreadySelected[0] && cardsWithoutAlreadySelected[0].type === cardOnTopOfCardStack.type) {
-					cardStore.setSelectedCards(cardsWithoutAlreadySelected)
-				} else {
-					cardStore.setSelectedCards([])
-				}
-			} else {
-				cardStore.setSelectedCards(cardsWithoutAlreadySelected)
+		const cardComboIds = cardStore?.selectedCards?.reverse().map(card => card.id)
+
+		const isSingleColorEffect = isColorEffectCard(card.type)
+		const isComboColorEffect = cardComboIds?.length > 1 && cardStore?.selectedCards?.every(card => isColorEffectCard(card.type))
+
+		if (isSingleColorEffect || isComboColorEffect) {
+			selectedColor = await ChooseColorModal.open()
+
+			if (!selectedColor) {
+				return
 			}
-		} else if ((selectedCard && selectedCardTypes?.includes(selectedCard.type)) || !selectedCardTypes?.length) {
-			cardStore.setSelectedCards([
-				...(lastSelectedCards || []),
-				selectedCard as CardData,
-			])
 		}
+
+		if (cardComboIds?.length > 1) {
+			putCard(cardComboIds, selectedColor)
+		} else {
+			putCard([card.id], selectedColor)
+		}
+	}
+	const toggleSelectedCard = (cardId: string) => {
+		// const lastSelectedCards = cardStore.selectedCards
+		const selectedCard = cards.find(card => card.id === cardId)
+		if (selectedCard) { handlePlay(selectedCard) }
+
+		// const cardOnTopOfCardStack = (socketStore.game as Game).usedCards[0]
+		// const selectedCardTypes = lastSelectedCards?.map(card => card.type)
+
+		// const isAlreadySelected = isCardSelected(cardId)
+
+		// if (isAlreadySelected) {
+		// 	const cardsWithoutAlreadySelected = lastSelectedCards?.filter(card => card.id !== cardId)
+
+		// 	if (!cardOnTopOfCardStack ||cardOnTopOfCardStack.color === selectedCard?.color) {
+		// 		if (cardsWithoutAlreadySelected[0] && cardsWithoutAlreadySelected[0].type === cardOnTopOfCardStack.type) {
+		// 			cardStore.setSelectedCards(cardsWithoutAlreadySelected)
+		// 		} else {
+		// 			cardStore.setSelectedCards([])
+		// 		}
+		// 	} else {
+		// 		cardStore.setSelectedCards(cardsWithoutAlreadySelected)
+		// 	}
+		// } else if ((selectedCard && selectedCardTypes?.includes(selectedCard.type)) || !selectedCardTypes?.length) {
+		// 	cardStore.setSelectedCards([
+		// 		...(lastSelectedCards || []),
+		// 		selectedCard as CardData,
+		// 	])
+		// }
 	}
 
 	const unselectAllCards = () => {

@@ -9,6 +9,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@uno-game/error-handler": "*",
+    "@uno-game/protocols": "*",
     "axios": "^0.21.1",
     "copy-to-clipboard": "^3.3.1",
     "lottie-web": "^5.6.10",
@@ -25,13 +26,13 @@
     "typescript": "^3.7.5"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.157",
-    "@types/react-router-dom": "^5.1.5",
-    "@types/socket.io-client": "^1.4.33",
     "@types/jest": "^24.9.1",
+    "@types/lodash": "^4.14.157",
     "@types/node": "^12.12.47",
     "@types/react": "^16.9.41",
     "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/socket.io-client": "^1.4.33",
     "@uno-game/protocols": "*"
   },
   "optionalDependencies": {

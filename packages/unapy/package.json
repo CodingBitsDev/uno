@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@uno-game/error-handler": "*",
+    "@uno-game/protocols": "*",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -37,7 +38,7 @@
     "@": "./dist"
   },
   "optionalDependencies": {
-    "@uno-game/protocols": "*",
-    "@uno-game/error-handler": "*"
+    "@uno-game/error-handler": "*",
+    "@uno-game/protocols": "*"
   }
 }

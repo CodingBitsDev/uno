@@ -104,8 +104,9 @@ class GameService {
 
 	async joinGame (gameId: string, playerId: string): Promise<Game> {
 		const game = await this.getGame(gameId)
+		if (!game) { return }
 
-		const player = game?.players?.find(player => player.id === playerId)
+		const player = game.players?.find(player => player.id === playerId)
 
 		const gameHasNotStarted = game.status === "waiting"
 		const gameIsNotFull = game.players.length < game.maxPlayers
@@ -232,7 +233,14 @@ class GameService {
 
 		game.players = await this.buildPlayersWithCardUsability(currentPlayerInfo.id, game)
 
+		const canPlayNow = await this.canUseCard(card, game)
+
 		await this.setGameData(gameId, game)
+
+		console.log("canPlayNow", canPlayNow)
+		if (!canPlayNow) {
+			await this.nextRound(gameId)
+		}
 	}
 
 	async putCard (playerId: string, cardIds: string[], gameId: string, selectedColor: CardColors): Promise<void> {
@@ -697,15 +705,29 @@ class GameService {
 					amountToBuy: 0,
 				})
 
-				if (game.direction === "clockwise") {
-					game.nextPlayerIndex++
-				} else {
-					game.nextPlayerIndex--
-				}
+				// if (game.direction === "clockwise") {
+				// 	game.nextPlayerIndex++
+				// } else {
+				// 	game.nextPlayerIndex--
+				// }
 			}
 		}
 
 		return game
+	}
+
+	private async canUseCard (card: CardData, game: Game) {
+		const topStackCard = await this.getTopStackCard(game)
+
+		return game?.currentCardCombo?.cardTypes.length ? (
+			this.cardCanBeBuyCombed(game, card)
+		) : (
+			topStackCard?.color === card?.color ||
+			card?.type === "change-color" ||
+			card?.type === "buy-4" ||
+			topStackCard?.type === card?.type ||
+			card?.color === game.currentGameColor
+		)
 	}
 
 	private async buildPlayersWithCardUsability (currentPlayerId: string, game: Game): Promise<PlayerData[]> {
