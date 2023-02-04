@@ -237,7 +237,7 @@ class GameService {
 
 		await this.setGameData(gameId, game)
 
-		if (!canPlayNow && !needToBuyCard) {
+		if (!canPlayNow && needToBuyCard) {
 			await this.nextRound(gameId)
 		}
 	}
