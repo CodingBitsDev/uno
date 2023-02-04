@@ -203,11 +203,11 @@ class GameService {
 
 		const player = game?.players?.find(player => player.id === currentPlayerInfo.id)
 
-		// const needToBuyCard = player?.handCards?.every(card => !card.canBeUsed)
+		const needToBuyCard = player?.handCards?.every(card => !card.canBeUsed)
 
-		// if (!needToBuyCard) {
-		// 	return
-		// }
+		if (!needToBuyCard) {
+			return
+		}
 
 		const available = [...game?.availableCards]
 
@@ -237,7 +237,7 @@ class GameService {
 
 		await this.setGameData(gameId, game)
 
-		if (!canPlayNow) {
+		if (!canPlayNow && !needToBuyCard) {
 			await this.nextRound(gameId)
 		}
 	}
