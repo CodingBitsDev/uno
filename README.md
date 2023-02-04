@@ -4,6 +4,7 @@
 
 <h3 align="center">
   An UNO Game made in Javascript 🎴
+	Modified Version of the original by https://github.com/guilhermebkel/uno-game
 </h3>
 
 <p align="center">
