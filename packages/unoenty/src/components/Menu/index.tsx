@@ -240,6 +240,15 @@ const Menu: React.FC = () => {
 						>
 							Give us a star on Github
 						</Button>
+						<Button
+							variant="text"
+							href="https://github.com/CodingBitsDev/uno"
+							target="_blank"
+							startIcon={<GithubIcon />}
+							className={classes.githubButton}
+						>
+							Modified by Renji
+						</Button>
 					</Grid>
 				</Grid>
 			</Drawer>
