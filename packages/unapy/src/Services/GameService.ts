@@ -451,7 +451,7 @@ class GameService {
 					...handCard,
 					canBeUsed: player.id === currentPlayer.id,
 				})),
-				canBuyCard: true,
+				canBuyCard: false,
 			}
 		})
 
