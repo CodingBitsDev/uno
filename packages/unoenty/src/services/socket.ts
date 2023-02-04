@@ -35,10 +35,12 @@ class SocketService {
 
 		this.on("connect", () => {
 			const playerData = AuthService.getPlayerData()
+			const password = AuthService.getPassword()
 
 			if (playerData) {
 				this.emit<SetPlayerDataEventInput, SetPlayerDataEventResponse>("SetPlayerData", {
 					player: playerData,
+					password: password,
 				})
 			}
 		})
@@ -72,25 +74,32 @@ class SocketService {
 		})
 	}
 
-	async getPlayerData (): Promise<Player> {
+	async getPlayerData (error?: string): Promise<Player> {
 		let playerData = AuthService.getPlayerData()
+		const password = AuthService.getPassword()
 
 		if (!playerData) {
-			const loginData = await LoginDialog.open()
+			const loginData = await LoginDialog.open(error)
 
 			playerData = {
 				id: "",
 				name: loginData.name,
+				password: loginData.password,
 			}
 		}
 
-		const { player } = await this.emit<SetPlayerDataEventInput, SetPlayerDataEventResponse>("SetPlayerData", {
-			player: playerData,
-		})
+		try {
+			const { player } = await this.emit<SetPlayerDataEventInput, SetPlayerDataEventResponse>("SetPlayerData", {
+				player: playerData,
+				password,
+			})
 
-		AuthService.setPlayerData(player)
+			AuthService.setPlayerData(player)
 
-		return player
+			return player
+		} catch (e) {
+			return await this.getPlayerData(e as string)
+		}
 	}
 }
 

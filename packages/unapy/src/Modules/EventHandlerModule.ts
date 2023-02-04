@@ -1,3 +1,5 @@
+import staticFilesConfig from "@/Config/static-files"
+
 import { Socket } from "socket.io"
 import ErrorHandler from "@uno-game/error-handler"
 
@@ -22,6 +24,16 @@ import {
 	ForceSelfDisconnectEventInput,
 } from "@uno-game/protocols"
 
+class WrongPasswordError extends Error {
+	constructor (msg: string) {
+		super(msg)
+		this.name = "Wrong Password"
+
+		// Set the prototype explicitly.
+		Object.setPrototypeOf(this, WrongPasswordError.prototype)
+	}
+}
+
 class EventHandlerModule {
 	clients: Map<string, Socket> = new Map()
 
@@ -30,6 +42,10 @@ class EventHandlerModule {
 			let playerData = {} as Player
 
 			SocketService.on<SetPlayerDataEventInput, SetPlayerDataEventResponse>(client, "SetPlayerData", async ({ player }) => {
+				if (player.password !== staticFilesConfig.password) {
+					throw new WrongPasswordError("The Password is wrong.")
+				}
+
 				playerData = await PlayerService.setPlayerData(player)
 
 				SocketService.setupListener(client, "player", playerData.id)

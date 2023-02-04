@@ -8,6 +8,11 @@ export type PlayerEvents =
 export type Player = {
 	id: string
 	name: string
+	password?: string,
+}
+
+export type Password = {
+	password: string
 }
 
 export type PlayerState =

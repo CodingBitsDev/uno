@@ -20,26 +20,28 @@ import useStyles from "@/components/LoginDialog/styles"
 
 type LoginDialogResponse = {
 	name: string
+	password: string
 }
 
 type LoginDialogType = {
-	open: () => Promise<LoginDialogResponse>
+	open: (error? :string) => Promise<LoginDialogResponse>
 }
 
 type LoginDialogProps = {
-	callback: (response: LoginDialogResponse) => void
+	callback: (response: LoginDialogResponse) => void,
+	error: string
 }
 
 const LoginDialog: LoginDialogType & React.FC<LoginDialogProps> = (props) => {
-	const { callback } = props
+	const { callback, error } = props
 
 	const [dialogVisible, setDialogVisible] = useState(true)
-	const [response, setResponse] = useState<LoginDialogResponse>({ name: "" })
+	const [response, setResponse] = useState<LoginDialogResponse>({ name: "", password: "" })
 
 	const classes = useStyles()
 
 	const handleConfirm = () => {
-		if (!response.name) {
+		if (!response.name || !response.password) {
 			return
 		}
 
@@ -94,6 +96,21 @@ const LoginDialog: LoginDialogType & React.FC<LoginDialogProps> = (props) => {
 							onChange={({ target }) => handleChange("name", target.value)}
 							fullWidth
 						/>
+						<TextField
+							autoFocus
+							required
+							margin="dense"
+							label="Password"
+							type="password"
+							value={response.password}
+							onChange={({ target }) => handleChange("password", target.value)}
+							fullWidth
+						/>
+						{error &&
+							<DialogContentText color="error">
+								{error}
+							</DialogContentText>
+						}
 					</DialogContent>
 					<DialogActions>
 						<Button
@@ -111,10 +128,11 @@ const LoginDialog: LoginDialogType & React.FC<LoginDialogProps> = (props) => {
 	)
 }
 
-LoginDialog.open = async (): Promise<LoginDialogResponse> => new Promise(resolve => Node.renderComponent(
+LoginDialog.open = async (error?:string): Promise<LoginDialogResponse> => new Promise(resolve => Node.renderComponent(
 	"login-dialog",
 	<LoginDialog
 		callback={resolve}
+		error={error || ""}
 	/>,
 ))
 

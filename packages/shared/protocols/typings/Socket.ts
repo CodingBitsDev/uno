@@ -30,7 +30,7 @@ export type SocketEventHandler<ReceivedData extends unknown, ResponseData extend
 	data: ReceivedData
 ) => Promise<ResponseData | void> | (ResponseData | void)
 
-export type SetPlayerDataEventInput = { player: Player }
+export type SetPlayerDataEventInput = { player: Player, password: string }
 export type SetPlayerDataEventResponse = { player: Player }
 
 export type CreateGameEventResponse = { gameId: string }
