@@ -203,11 +203,11 @@ class GameService {
 
 		const player = game?.players?.find(player => player.id === currentPlayerInfo.id)
 
-		const needToBuyCard = player?.handCards?.every(card => !card.canBeUsed)
+		// const needToBuyCard = player?.handCards?.every(card => !card.canBeUsed)
 
-		if (!needToBuyCard) {
-			return
-		}
+		// if (!needToBuyCard) {
+		// 	return
+		// }
 
 		const available = [...game?.availableCards]
 
@@ -237,7 +237,6 @@ class GameService {
 
 		await this.setGameData(gameId, game)
 
-		console.log("canPlayNow", canPlayNow)
 		if (!canPlayNow) {
 			await this.nextRound(gameId)
 		}
@@ -452,7 +451,7 @@ class GameService {
 					...handCard,
 					canBeUsed: player.id === currentPlayer.id,
 				})),
-				canBuyCard: false,
+				canBuyCard: true,
 			}
 		})
 
@@ -752,7 +751,7 @@ class GameService {
 				return {
 					...player,
 					isCurrentRoundPlayer: true,
-					canBuyCard: handCards.every(card => !card.canBeUsed),
+					canBuyCard: true, // handCards.every(card => !card.canBeUsed),
 					handCards,
 				}
 			} else {
