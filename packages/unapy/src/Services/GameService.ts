@@ -205,9 +205,9 @@ class GameService {
 
 		const needToBuyCard = player?.handCards?.every(card => !card.canBeUsed)
 
-		if (!needToBuyCard) {
-			return
-		}
+		// if (!needToBuyCard) {
+		// 	return
+		// }
 
 		const available = [...game?.availableCards]
 
