@@ -9,6 +9,7 @@ class PlayerService {
 		const player = {
 			id: playerData.id || CryptUtil.makeUUID(),
 			name: playerData.name,
+			password: playerData.password,
 		}
 
 		await PlayerRepository.setPlayerData(player)
