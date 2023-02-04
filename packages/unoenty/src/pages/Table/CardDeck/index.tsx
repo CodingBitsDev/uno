@@ -190,6 +190,7 @@ const CardDeck: React.FC<CardDeckProps> = (props) => {
 	const canBePartOfCurrentCombo = (cardType: CardTypes) => !!cardStore?.selectedCards?.some(card => card.type === cardType)
 
 	const toggleSelectedCard = (cardId: string) => {
+		console.log("### toggle", cardId)
 		const lastSelectedCards = cardStore.selectedCards
 		const selectedCard = cards.find(card => card.id === cardId)
 		const cardOnTopOfCardStack = (socketStore.game as Game).usedCards[0]
